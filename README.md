@@ -1,5 +1,5 @@
 # consync
-consync is a tool to help with managing Consul key/value data across multiple datacenters.
+consync is a tool to help sync or diff Consul key/value data across multiple datacenters.
 
 Please note that consync is in early development and does not have full test coverage yet.  It
 seems to be working correctly but until tests are implemented completely use with caution!
