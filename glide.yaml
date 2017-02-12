@@ -1,0 +1,10 @@
+package: github.com/aphistic/consync
+import:
+- package: github.com/alecthomas/kingpin
+- package: github.com/hashicorp/consul
+  subpackages:
+  - api
+- package: github.com/mgutz/ansi
+testImport:
+- package: github.com/aphistic/sweet
+- package: github.com/onsi/gomega

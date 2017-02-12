@@ -6,3 +6,7 @@ type Address struct {
 	DataCenter string
 	ACLToken   string
 }
+
+func (a *Address) fixupValues() {
+	a.Path = fixPath(a.Path)
+}

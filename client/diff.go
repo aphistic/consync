@@ -1,6 +1,9 @@
 package client
 
-import "path"
+import (
+	"path"
+	"reflect"
+)
 
 type DiffItem struct {
 	FromPath  string
@@ -11,6 +14,9 @@ type DiffItem struct {
 }
 
 func Diff(from *Address, to *Address) ([]*DiffItem, error) {
+	from.fixupValues()
+	to.fixupValues()
+
 	fromVals, err := getValues(from)
 	if err != nil {
 		return nil, err
@@ -24,11 +30,14 @@ func Diff(from *Address, to *Address) ([]*DiffItem, error) {
 	for fPath, fVal := range fromVals {
 		item := &DiffItem{}
 
+		item.Type = ActionAdd
 		item.FromPath = path.Join(from.Path, fPath)
 		item.FromValue = fVal.Value
+		item.ToPath = path.Join(to.Path, fPath)
+		item.ToValue = fVal.Value
 
 		if tVal, ok := toVals[fPath]; ok {
-			if fVal == tVal {
+			if reflect.DeepEqual(fVal, tVal) {
 				// The from and to values are the same, there's nothing
 				// to change
 				continue
@@ -37,14 +46,20 @@ func Diff(from *Address, to *Address) ([]*DiffItem, error) {
 
 			item.ToPath = path.Join(to.Path, fPath)
 			item.ToValue = tVal.Value
-		} else {
-			item.Type = ActionAdd
-
-			item.ToPath = path.Join(to.Path, fPath)
-			item.ToValue = fVal.Value
 		}
 
 		results = append(results, item)
+	}
+	for tPath, tVal := range toVals {
+		item := &DiffItem{}
+
+		if _, ok := fromVals[tPath]; !ok {
+			item.Type = ActionRemove
+			item.ToPath = path.Join(to.Path, tPath)
+			item.ToValue = tVal.Value
+
+			results = append(results, item)
+		}
 	}
 
 	return results, nil

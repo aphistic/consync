@@ -17,7 +17,9 @@ type kvItem struct {
 
 func getClient(addr *Address) (*api.Client, error) {
 	return api.NewClient(&api.Config{
-		Address: addr.Addr,
+		Address:    addr.Addr,
+		Datacenter: addr.DataCenter,
+		Token:      addr.ACLToken,
 	})
 }
 
@@ -35,8 +37,10 @@ func getValues(addr *Address) (map[string]*kvItem, error) {
 
 	values := make(map[string]*kvItem)
 	for _, kvp := range fKVPairs {
-		values[kvp.Key] = &kvItem{
-			Path:  kvp.Key,
+		key := stripPrefix(kvp.Key, addr.Path)
+
+		values[key] = &kvItem{
+			Path:  key,
 			Value: kvp.Value,
 		}
 	}
@@ -52,4 +56,20 @@ func fixPath(path string) string {
 		path = path[:len(path)-1]
 	}
 	return path
+}
+
+func stripPrefix(path, prefix string) string {
+	newPath := path
+	if newPath != "" && newPath[0] == '/' {
+		newPath = newPath[1:]
+	}
+	if len(newPath) > len(prefix) {
+		if newPath[:len(prefix)] == prefix {
+			newPath = newPath[len(prefix):]
+			if newPath != "" && newPath[0] == '/' {
+				newPath = newPath[1:]
+			}
+		}
+	}
+	return newPath
 }

@@ -9,8 +9,8 @@ import (
 )
 
 func Sync(from *Address, to *Address) error {
-	from.Path = fixPath(from.Path)
-	to.Path = fixPath(to.Path)
+	from.fixupValues()
+	to.fixupValues()
 
 	items, err := SyncPreview(from, to)
 	if err != nil {
@@ -56,8 +56,8 @@ type SyncPreviewItem struct {
 }
 
 func SyncPreview(from *Address, to *Address) ([]*SyncPreviewItem, error) {
-	from.Path = fixPath(from.Path)
-	to.Path = fixPath(to.Path)
+	from.fixupValues()
+	to.fixupValues()
 
 	fromVals, err := getValues(from)
 	if err != nil {
