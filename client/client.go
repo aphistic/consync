@@ -18,6 +18,7 @@ type kvItem struct {
 func getClient(addr *Address) (*api.Client, error) {
 	return api.NewClient(&api.Config{
 		Address:    addr.Addr,
+		Scheme:     addr.Scheme,
 		Datacenter: addr.DataCenter,
 		Token:      addr.ACLToken,
 	})

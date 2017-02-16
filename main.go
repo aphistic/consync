@@ -73,12 +73,14 @@ func diff() {
 
 	from := &client.Address{
 		Addr:       fromURL.Host,
+		Scheme:     fromURL.Scheme,
 		Path:       fromURL.Path,
 		DataCenter: *diffCommandFromDC,
 		ACLToken:   *diffCommandFromToken,
 	}
 	to := &client.Address{
 		Addr:       toURL.Host,
+		Scheme:     toURL.Scheme,
 		Path:       toURL.Path,
 		DataCenter: *diffCommandToDC,
 		ACLToken:   *diffCommandToToken,
@@ -133,12 +135,14 @@ func sync() {
 
 	from := &client.Address{
 		Addr:       fromURL.Host,
+		Scheme:     fromURL.Scheme,
 		Path:       fromURL.Path,
 		DataCenter: *syncCommandFromDC,
 		ACLToken:   *syncCommandFromToken,
 	}
 	to := &client.Address{
 		Addr:       toURL.Host,
+		Scheme:     toURL.Scheme,
 		Path:       toURL.Path,
 		DataCenter: *syncCommandToDC,
 		ACLToken:   *syncCommandToToken,
