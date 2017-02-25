@@ -55,7 +55,9 @@ func main() {
 
 	cmd, err := app.Parse(os.Args[1:])
 	if err != nil {
-		fmt.Printf("Error parsing args: %s\n", err)
+		fmt.Fprintf(os.Stderr, "Error parsing args: %s\n\n", err)
+
+		app.Usage([]string{})
 		os.Exit(1)
 	}
 
