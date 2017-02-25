@@ -8,6 +8,20 @@ import (
 	"github.com/aphistic/consync/client"
 )
 
+var (
+	diffCommand          = app.Command("diff", "Generate a diff between two Consul key/value locations")
+	diffcommandRecursive = diffCommand.Flag("recursive", "Perform a diff on keys and folders recursively.").
+				Short('r').Bool()
+	diffCommandFrom = diffCommand.Flag("from", "URL to generate the diff from").
+			Required().Short('f').URL()
+	diffCommandFromToken = diffCommand.Flag("from-token", "ACL token to use for the 'from' connection").String()
+	diffCommandFromDC    = diffCommand.Flag("from-dc", "Datacenter to use for the 'from' connection").String()
+	diffCommandTo        = diffCommand.Flag("to", "URL to generate the diff to").
+				Required().Short('t').URL()
+	diffCommandToToken = diffCommand.Flag("to-token", "ACL token to use for the 'to' connection").String()
+	diffCommandToDC    = diffCommand.Flag("to-dc", "Datacenter to use for the 'to' connection").String()
+)
+
 func diff() {
 	fromURL := fixupURL(*diffCommandFrom)
 	toURL := fixupURL(*diffCommandTo)
@@ -27,7 +41,7 @@ func diff() {
 		ACLToken:   *diffCommandToToken,
 	}
 
-	items, err := client.Diff(from, to)
+	items, err := client.Diff(from, to, *diffcommandRecursive)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error performing diff: %s\n", err)
 		os.Exit(1)

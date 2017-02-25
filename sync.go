@@ -8,6 +8,22 @@ import (
 	"github.com/aphistic/consync/client"
 )
 
+var (
+	syncCommand          = app.Command("sync", "Sync values from one Consul key/value location to another")
+	syncCommandRecursive = syncCommand.Flag("recursive", "Sync keys and their contents recursively").
+				Short('r').Bool()
+	syncCommandFrom = syncCommand.Flag("from", "URL to sync from").
+			Required().Short('f').URL()
+	syncCommandFromToken = syncCommand.Flag("from-token", "ACL token to use for the 'from' connection").String()
+	syncCommandFromDC    = syncCommand.Flag("from-dc", "Datacenter to use for the 'from' connection").String()
+	syncCommandTo        = syncCommand.Flag("to", "URL to sync to").
+				Required().Short('t').URL()
+	syncCommandToToken = syncCommand.Flag("to-token", "ACL token to use for the 'to' connection").String()
+	syncCommandToDC    = syncCommand.Flag("to-dc", "Datacenter to use for the 'to' connection").String()
+	syncCommandExec    = syncCommand.Flag("execute", "Executes the changes required to sync values").
+				Short('e').Bool()
+)
+
 func sync() {
 	fromURL := fixupURL(*syncCommandFrom)
 	toURL := fixupURL(*syncCommandTo)
@@ -28,7 +44,7 @@ func sync() {
 	}
 
 	if !(*syncCommandExec) {
-		items, err := client.SyncPreview(from, to)
+		items, err := client.SyncPreview(from, to, *syncCommandRecursive)
 		if err != nil {
 			fmt.Printf("preview err: %s\n", err)
 			os.Exit(1)
@@ -65,7 +81,7 @@ func sync() {
 			}
 		}
 	} else {
-		err := client.Sync(from, to)
+		err := client.Sync(from, to, *syncCommandRecursive)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Sync error: %s\n", err)
 			os.Exit(1)

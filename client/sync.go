@@ -8,11 +8,11 @@ import (
 	"github.com/hashicorp/consul/api"
 )
 
-func Sync(from *Address, to *Address) error {
+func Sync(from *Address, to *Address, recursive bool) error {
 	from.fixupValues()
 	to.fixupValues()
 
-	items, err := SyncPreview(from, to)
+	items, err := SyncPreview(from, to, recursive)
 	if err != nil {
 		return err
 	}
@@ -55,15 +55,15 @@ type SyncPreviewItem struct {
 	Type  ActionType
 }
 
-func SyncPreview(from *Address, to *Address) ([]*SyncPreviewItem, error) {
+func SyncPreview(from *Address, to *Address, recursive bool) ([]*SyncPreviewItem, error) {
 	from.fixupValues()
 	to.fixupValues()
 
-	fromVals, err := getValues(from)
+	fromVals, err := getValues(from, recursive)
 	if err != nil {
 		return nil, err
 	}
-	toVals, err := getValues(to)
+	toVals, err := getValues(to, recursive)
 	if err != nil {
 		return nil, err
 	}

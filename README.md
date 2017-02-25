@@ -43,6 +43,9 @@ consync provides a `diff` command to display the differences between two paths i
 can be in the same data center at different paths, different data centers at the same path or even
 different data centers at different paths.
 
+By default a diff will only show a diff of the keys in the specified directory.  To perform a diff
+on both keys and directories, provide the `--recursive` (or `-r`) parameter.
+
 For example, to view the difference between the same path for two data centers in the same cluster,
 you could do:
 
@@ -60,6 +63,9 @@ but not in the source.  This command functions similar to the `diff` command as 
 you can provide but it also includes an additional `--execute` (or `-e`) parameter. If the
 execute parameter is not provided, consync will only display the changes it would make instead of
 actually applying them.  This is to make sure changes aren't accidentally applied to a target.
+
+By default syncing will only sync keys in the specified directory.  To sync keys and directories,
+provide the `--recursive` (or `-r`) parameter.
 
 An example of using the `sync` command is as follows:
 

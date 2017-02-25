@@ -13,15 +13,15 @@ type DiffItem struct {
 	ToValue   []byte
 }
 
-func Diff(from *Address, to *Address) ([]*DiffItem, error) {
+func Diff(from *Address, to *Address, recursive bool) ([]*DiffItem, error) {
 	from.fixupValues()
 	to.fixupValues()
 
-	fromVals, err := getValues(from)
+	fromVals, err := getValues(from, recursive)
 	if err != nil {
 		return nil, err
 	}
-	toVals, err := getValues(to)
+	toVals, err := getValues(to, recursive)
 	if err != nil {
 		return nil, err
 	}

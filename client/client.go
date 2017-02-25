@@ -3,6 +3,8 @@ package client
 import (
 	"path"
 
+	"strings"
+
 	"github.com/hashicorp/consul/api"
 )
 
@@ -28,7 +30,7 @@ func getClient(addr *Address) (*api.Client, error) {
 	})
 }
 
-func getValues(addr *Address) (map[string]*kvItem, error) {
+func getValues(addr *Address, recursive bool) (map[string]*kvItem, error) {
 	client, err := getClient(addr)
 	if err != nil {
 		return nil, err
@@ -47,6 +49,12 @@ func getValues(addr *Address) (map[string]*kvItem, error) {
 
 		if key == "" {
 			// Skip the root folder
+			continue
+		}
+
+		// If we're not syncing recursively then just skip
+		// any paths that include a folder
+		if !recursive && strings.Contains(key, "/") {
 			continue
 		}
 
