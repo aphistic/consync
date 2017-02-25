@@ -1,6 +1,10 @@
 package client
 
-import "github.com/hashicorp/consul/api"
+import (
+	"path"
+
+	"github.com/hashicorp/consul/api"
+)
 
 type ActionType int
 
@@ -37,17 +41,30 @@ func getValues(addr *Address) (map[string]*kvItem, error) {
 	}
 
 	values := make(map[string]*kvItem)
+	folders := make(map[string]bool)
 	for _, kvp := range fKVPairs {
 		key := stripPrefix(kvp.Key, addr.Path)
 
 		if key == "" {
+			// Skip the root folder
 			continue
 		}
+
+		// Keep track of any folders we find in the keys
+		folders[path.Dir(key)] = true
 
 		values[key] = &kvItem{
 			Path:  key,
 			Value: kvp.Value,
 		}
+	}
+
+	// Remove any folders that have been added as values.
+	// For some reason the api doesn't give any way to determine if
+	// something is a folder or a value when you get it in the list.
+	for folder := range folders {
+		delete(values, folder)
+		delete(values, folder+"/")
 	}
 
 	return values, nil
