@@ -40,6 +40,10 @@ func getValues(addr *Address) (map[string]*kvItem, error) {
 	for _, kvp := range fKVPairs {
 		key := stripPrefix(kvp.Key, addr.Path)
 
+		if key == "" {
+			continue
+		}
+
 		values[key] = &kvItem{
 			Path:  key,
 			Value: kvp.Value,
