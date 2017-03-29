@@ -1,0 +1,57 @@
+environment:
+  - CONSYNC_VERSION=0.1.0
+  - WORK_PATH=/go/src/github.com/aphistic/consync
+
+tasks:
+
+  import:
+    type: import
+    files:
+      - .
+
+  export:
+    type: export
+    files:
+      - consync-${CONSYNC_VERSION}-linux-amd64
+      - consync-${CONSYNC_VERSION}-darwin-amd64
+
+  testing:
+    image: convey/go-test:latest
+    workspace: ${WORK_PATH}
+    workdir: ${WORK_PATH}
+
+  build-linux:
+    image: convey/go-build:latest
+    command: -o consync-${CONSYNC_VERSION}-linux-amd64
+    environment:
+      - GOOS=linux
+      - GOARCH=amd64
+    workspace: ${WORK_PATH}
+    workdir: ${WORK_PATH}
+
+  build-darwin:
+    image: convey/go-build:latest
+    command: -o consync-${CONSYNC_VERSION}-darwin-amd64
+    environment:
+      - GOOS=darwin
+      - GOARCH=amd64
+    workspace: ${WORK_PATH}
+    workdir: ${WORK_PATH}
+
+plans:
+
+  default:
+    stages:
+      - name: import
+        tasks:
+          - import
+      - name: testing
+        tasks: [testing]
+      - name: build
+        concurrent: true
+        tasks:
+          - build-linux
+          - build-darwin
+      - name: export
+        tasks:
+          - export
